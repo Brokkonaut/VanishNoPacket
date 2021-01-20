@@ -18,13 +18,16 @@ public final class ListenServerPing implements Listener {
 
     @EventHandler
     public void ping(ServerListPingEvent event) {
-        final Set<String> invisibles = this.manager.getVanishedPlayers();
-        final Iterator<Player> players = event.iterator();
-        while (players.hasNext()) {
-            Player player = players.next();
-            if (invisibles.contains(player.getName())) {
-                players.remove();
+        try {
+            final Set<String> invisibles = this.manager.getVanishedPlayers();
+            final Iterator<Player> players = event.iterator();
+            while (players.hasNext()) {
+                Player player = players.next();
+                if (invisibles.contains(player.getName())) {
+                    players.remove();
+                }
             }
+        } catch (UnsupportedOperationException ex) {
         }
     }
 }
