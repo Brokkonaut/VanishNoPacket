@@ -3,6 +3,7 @@ package org.kitteh.vanish.listeners;
 import java.util.HashSet;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
@@ -42,6 +43,7 @@ public final class ListenPlayerOther implements Listener {
             fakeInventoryBlockTypes.add(Material.BARREL);
             fakeInventoryBlockTypes.add(Material.CHISELED_BOOKSHELF);
             fakeInventoryBlockTypes.add(Material.DECORATED_POT);
+            fakeInventoryBlockTypes.addAll(Tag.COPPER_CHESTS.getValues());
         } catch (NoSuchFieldError ignored) {
         }
     }
