@@ -1,5 +1,7 @@
 package org.kitteh.vanish;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -52,8 +54,8 @@ public final class VanishCommand implements CommandExecutor {
         if (goal.equalsIgnoreCase("reload")) {
             if (VanishPerms.canReload(sender)) {
                 this.plugin.reload();
-                sender.sendMessage(ChatColor.DARK_AQUA + "[Vanish] Users reloaded");
-                sender.sendMessage(ChatColor.DARK_AQUA + "[Vanish] Some settings refreshed");
+                sender.sendMessage(Component.text("[Vanish] Users reloaded", NamedTextColor.DARK_AQUA));
+                sender.sendMessage(Component.text("[Vanish] Some settings refreshed", NamedTextColor.DARK_AQUA));
             } else {
                 this.denied(sender);
             }
@@ -61,20 +63,18 @@ public final class VanishCommand implements CommandExecutor {
         }
         if (goal.equalsIgnoreCase("list")) {
             if (VanishPerms.canList(sender)) {
-                final StringBuilder list = new StringBuilder();
+                Component msg = Component.text("Vanished: ", NamedTextColor.DARK_AQUA);
+                boolean first = true;
                 for (final Player player : this.plugin.getServer().getOnlinePlayers()) {
                     if ((player != null) && this.plugin.getManager().isVanished(player)) {
-                        if (list.length() > 0) {
-                            list.append(ChatColor.DARK_AQUA);
-                            list.append(',');
+                        if (!first) {
+                            msg = msg.append(Component.text(", "));
                         }
-                        list.append(ChatColor.AQUA);
-                        list.append(player.getName());
+                        first = false;
+                        msg = msg.append(Component.text(player.getName(), NamedTextColor.AQUA));
                     }
                 }
-                list.insert(0, "Vanished: ");
-                list.insert(0, ChatColor.DARK_AQUA);
-                sender.sendMessage(list.toString());
+                sender.sendMessage(msg);
             } else {
                 this.denied(sender);
             }
@@ -91,9 +91,9 @@ public final class VanishCommand implements CommandExecutor {
         // Check if I'm vanished
         if (goal.equalsIgnoreCase("check")) {
             if (this.plugin.getManager().isVanished(player)) {
-                player.sendMessage(ChatColor.DARK_AQUA + "You are invisible.");
+                player.sendMessage(Component.text("You are invisible.", NamedTextColor.DARK_AQUA));
             } else {
-                player.sendMessage(ChatColor.DARK_AQUA + "You are visible.");
+                player.sendMessage(Component.text("You are visible.", NamedTextColor.DARK_AQUA));
             }
             return true;
         }
@@ -217,7 +217,7 @@ public final class VanishCommand implements CommandExecutor {
                 if (!this.plugin.getManager().isVanished(player)) {
                     this.plugin.getManager().toggleVanish(player);
                 } else {
-                    player.sendMessage(ChatColor.RED + "Already invisible :)");
+                    player.sendMessage(Component.text("Already invisible :)", NamedTextColor.RED));
                 }
                 boolean forced = false;
                 if ((args.length > 1) && (args[1].equalsIgnoreCase("f") || args[1].equalsIgnoreCase("force"))) {
@@ -234,7 +234,7 @@ public final class VanishCommand implements CommandExecutor {
                 if (this.plugin.getManager().isVanished(player)) {
                     this.plugin.getManager().toggleVanish(player);
                 } else {
-                    player.sendMessage(ChatColor.RED + "Already visible :)");
+                    player.sendMessage(Component.text("Already visible :)", NamedTextColor.RED));
                 }
                 boolean forced = false;
                 if ((args.length > 1) && (args[1].equalsIgnoreCase("f") || args[1].equalsIgnoreCase("force"))) {
@@ -274,7 +274,7 @@ public final class VanishCommand implements CommandExecutor {
     }
 
     private void denied(CommandSender sender) {
-        sender.sendMessage(ChatColor.AQUA + "[Vanish] " + ChatColor.DARK_AQUA + "Access denied.");
+        sender.sendMessage(Component.text("[Vanish] ", NamedTextColor.AQUA).append(Component.text("Access denied.", NamedTextColor.DARK_AQUA)));
     }
 
     private void toggle(Player player, String toggle) {
@@ -334,7 +334,7 @@ public final class VanishCommand implements CommandExecutor {
             }
             player.sendMessage(message.toString());
         } else if (VanishPerms.canVanish(player)) {
-            player.sendMessage(ChatColor.DARK_AQUA + "You can't toggle that!");
+            player.sendMessage(Component.text("You can't toggle that!", NamedTextColor.DARK_AQUA));
         }
     }
 }

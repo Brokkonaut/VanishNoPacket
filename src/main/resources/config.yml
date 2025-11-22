@@ -8,8 +8,8 @@
 #
 fakeannounce:
     automaticforsilentjoin: false
-    join: '%p joined the game.'
-    quit: '%p left the game.'
+    join: '%p joined the game'
+    quit: '%p left the game'
 hooks:
     essentials: false
     dynmap: false

@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.kitteh.vanish.hooks.HookManager.HookType;
 import org.kitteh.vanish.hooks.plugins.VaultHook;
@@ -78,20 +79,19 @@ public final class VanishAnnounceManipulator {
         return true;
     }
 
-    private String injectPlayerInformation(String message, Player player) {
+    private Component injectPlayerInformation(String message, Player player) {
         final VaultHook vault = (VaultHook) this.plugin.getHookManager().getHook(HookType.Vault);
         message = message.replace("%p", player.getName());
-        message = message.replace("%d", player.getDisplayName());
         String prefix = vault.getPrefix(player);
         message = message.replace("%up", prefix);
         String suffix = vault.getSuffix(player);
         message = message.replace("%us", suffix);
-        return message;
+        return Component.text(message, NamedTextColor.YELLOW).replaceText(TextReplacementConfig.builder().matchLiteral("%d").replacement(player.displayName()).build());
     }
 
     void fakeJoin(Player player, boolean force) {
         if (force || !(this.playerOnlineStatus.containsKey(player.getName()) && this.playerOnlineStatus.get(player.getName()))) {
-            this.plugin.getServer().broadcastMessage(ChatColor.YELLOW + this.injectPlayerInformation(Settings.getFakeJoin(), player));
+            this.plugin.getServer().broadcast(this.injectPlayerInformation(Settings.getFakeJoin(), player));
             this.plugin.getLogger().info(player.getName() + " faked joining");
             this.playerOnlineStatus.put(player.getName(), true);
         }
@@ -99,7 +99,7 @@ public final class VanishAnnounceManipulator {
 
     void fakeQuit(Player player, boolean force) {
         if (force || !(this.playerOnlineStatus.containsKey(player.getName()) && !this.playerOnlineStatus.get(player.getName()))) {
-            this.plugin.getServer().broadcastMessage(ChatColor.YELLOW + this.injectPlayerInformation(Settings.getFakeQuit(), player));
+            this.plugin.getServer().broadcast(this.injectPlayerInformation(Settings.getFakeQuit(), player));
             this.plugin.getLogger().info(player.getName() + " faked quitting");
             this.playerOnlineStatus.put(player.getName(), false);
         }

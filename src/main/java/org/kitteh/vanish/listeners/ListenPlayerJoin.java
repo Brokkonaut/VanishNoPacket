@@ -1,6 +1,7 @@
 package org.kitteh.vanish.listeners;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,16 +34,16 @@ public final class ListenPlayerJoin implements Listener {
     public void onPlayerJoinLate(PlayerJoinEvent event) {
         if (VanishPerms.joinWithoutAnnounce(event.getPlayer())) {
             this.plugin.getManager().getAnnounceManipulator().addToDelayedAnnounce(event.getPlayer().getName());
-            event.setJoinMessage(null);
+            event.joinMessage(null);
         }
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             final StringBuilder statusUpdate = new StringBuilder();
             if (this.plugin.getManager().isVanished(event.getPlayer())) {
-                String message = ChatColor.DARK_AQUA + "You have joined vanished.";
+                String message =  "You have joined vanished.";
                 if (VanishPerms.canVanish(event.getPlayer())) {
                     message += " To appear: /vanish";
                 }
-                event.getPlayer().sendMessage(message);
+                event.getPlayer().sendMessage(Component.text(message,NamedTextColor.DARK_AQUA));
                 statusUpdate.append("vanished");
             }
             if (VanishPerms.joinWithoutAnnounce(event.getPlayer())) {
@@ -52,7 +53,7 @@ public final class ListenPlayerJoin implements Listener {
                 statusUpdate.append("silently");
             }
             if (statusUpdate.length() != 0) {
-                this.plugin.messageStatusUpdate(ChatColor.DARK_AQUA + event.getPlayer().getName() + " has joined " + statusUpdate.toString());
+                this.plugin.messageStatusUpdate(Component.text(event.getPlayer().getName() + " has joined " + statusUpdate.toString(), NamedTextColor.DARK_AQUA));
             }
         });
     }

@@ -1,6 +1,5 @@
 package org.kitteh.vanish;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.LazyMetadataValue;
 import org.bukkit.metadata.LazyMetadataValue.CacheStrategy;
@@ -18,6 +17,8 @@ import org.kitteh.vanish.listeners.ListenToYourHeart;
 import org.kitteh.vanish.utils.MinecraftVersion;
 import java.io.File;
 import java.util.HashSet;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class VanishPlugin extends JavaPlugin {
 
@@ -65,7 +66,7 @@ public final class VanishPlugin extends JavaPlugin {
      * @return version of VanishNoPacket in use
      */
     public String getCurrentVersion() {
-        return this.getDescription().getVersion();
+        return this.getPluginMeta().getVersion();
     }
 
     /**
@@ -132,7 +133,7 @@ public final class VanishPlugin extends JavaPlugin {
      *
      * @param message the message to send
      */
-    public void messageStatusUpdate(String message) {
+    public void messageStatusUpdate(Component message) {
         this.messageStatusUpdate(message, null);
     }
 
@@ -142,7 +143,7 @@ public final class VanishPlugin extends JavaPlugin {
      * @param message the message to send
      * @param avoid player to not send the message to
      */
-    public void messageStatusUpdate(String message, Player avoid) {
+    public void messageStatusUpdate(Component message, Player avoid) {
         for (final Player player : this.getServer().getOnlinePlayers()) {
             if ((player != null) && !player.equals(avoid) && VanishPerms.canSeeStatusUpdates(player)) {
                 player.sendMessage(message);
@@ -156,7 +157,7 @@ public final class VanishPlugin extends JavaPlugin {
         for (final Player player : VanishPlugin.this.getServer().getOnlinePlayers()) {
             if (player != null) {
                 if (this.manager.isVanished(player)) {
-                    player.sendMessage(ChatColor.DARK_AQUA + "[Vanish] You have been forced visible by a reload.");
+                    player.sendMessage(Component.text("[Vanish] You have been forced visible by a reload.", NamedTextColor.DARK_AQUA));
                 }
             }
         }

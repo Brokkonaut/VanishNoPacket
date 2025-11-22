@@ -1,6 +1,5 @@
 package org.kitteh.vanish;
 
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public final class Settings {
@@ -87,8 +86,8 @@ public final class Settings {
             plugin.saveConfig();
         }
         Settings.enablePermTest = config.getBoolean("permtest", false);
-        Settings.fakeJoin = config.getString("fakeannounce.join", "%p joined the game.").replace("&&", String.valueOf(ChatColor.COLOR_CHAR));
-        Settings.fakeQuit = config.getString("fakeannounce.quit", "%p left the game.").replace("&&", String.valueOf(ChatColor.COLOR_CHAR));
+        Settings.fakeJoin = config.getString("fakeannounce.join", "%p joined the game.");
+        Settings.fakeQuit = config.getString("fakeannounce.quit", "%p left the game.");
         Settings.autoFakeJoinSilent = config.getBoolean("fakeannounce.automaticforsilentjoin", false);
         Settings.worldChangeCheck = config.getBoolean("permissionsupdates.checkonworldchange", false);
         Settings.lightningEffectCount = config.getInt("effects.lightning.count", 30);
@@ -96,7 +95,7 @@ public final class Settings {
             Settings.lightningEffectCount = 1;
         }
         Settings.soundOnVanish = config.getBoolean("soundOnVanish", true);
-        Settings.vanishedActionBarMessage = config.getString("vanishedActionBarMessage", "&&3&&lYou are vanished!").replace("&&", String.valueOf(ChatColor.COLOR_CHAR));
+        Settings.vanishedActionBarMessage = config.getString("vanishedActionBarMessage", "&&3&&lYou are vanished!");
         if (config.getBoolean("debug", false)) {
             Debuggle.itsGoTime(plugin);
         } else {

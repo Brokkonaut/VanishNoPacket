@@ -1,7 +1,8 @@
 package org.kitteh.vanish.listeners;
 
 import java.util.HashSet;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -95,10 +96,10 @@ public final class ListenPlayerOther implements Listener {
                 event.setCancelled(true);
                 if (fake) {
                     Inventory originalInventory = inventory;
-                    inventory = this.plugin.getServer().createInventory(player, ((originalInventory.getSize() + 8) / 9) * 9, StringUtil.capitalizeFirstLetter(blockType.name()));
+                    inventory = this.plugin.getServer().createInventory(player, ((originalInventory.getSize() + 8) / 9) * 9, Component.text(StringUtil.capitalizeFirstLetter(blockType.name())));
                     inventory.setContents(originalInventory.getContents());
                     this.plugin.chestFakeOpen(player.getName());
-                    player.sendMessage(ChatColor.AQUA + "[VNP] Opening chest silently. Can not edit.");
+                    player.sendMessage(Component.text("[VNP] Opening chest silently. Can not edit.", NamedTextColor.AQUA));
                 }
                 player.openInventory(inventory);
                 return;
@@ -143,13 +144,13 @@ public final class ListenPlayerOther implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (this.plugin.getManager().isVanished(player)) {
-            this.plugin.messageStatusUpdate(ChatColor.DARK_AQUA + event.getPlayer().getName() + " has quit vanished");
+            this.plugin.messageStatusUpdate(Component.text(event.getPlayer().getName() + " has quit vanished", NamedTextColor.DARK_AQUA));
         }
         this.plugin.getManager().playerQuit(player);
         this.plugin.hooksQuit(player);
         this.plugin.getManager().getAnnounceManipulator().dropDelayedAnnounce(player.getName());
         if (!this.plugin.getManager().getAnnounceManipulator().playerHasQuit(player.getName()) || VanishPerms.silentQuit(player)) {
-            event.setQuitMessage(null);
+            event.quitMessage(null);
         }
         this.plugin.chestFakeClose(event.getPlayer().getName());
         player.removeMetadata("vanished", this.plugin);

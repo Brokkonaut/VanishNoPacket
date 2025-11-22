@@ -1,12 +1,11 @@
 package org.kitteh.vanish;
 
 import com.google.common.collect.ImmutableSet;
-
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -202,7 +201,7 @@ public final class VanishManager {
         this.toggleVanishQuiet(togglingPlayer);
         final String vanishingPlayerName = togglingPlayer.getName();
         final String messageBit;
-        final String base = ChatColor.YELLOW + vanishingPlayerName + " has ";
+        final String base =  vanishingPlayerName + " has ";
         if (this.isVanished(togglingPlayer)) {
             Debuggle.log("LoudVanishToggle Vanishing " + togglingPlayer.getName());
             this.plugin.hooksVanish(togglingPlayer);
@@ -215,8 +214,8 @@ public final class VanishManager {
             this.announceManipulator.vanishToggled(togglingPlayer);
         }
         final String message = base + messageBit;
-        togglingPlayer.sendMessage(ChatColor.DARK_AQUA + "You have " + messageBit);
-        this.plugin.messageStatusUpdate(message, togglingPlayer);
+        togglingPlayer.sendMessage(Component.text("You have " + messageBit, NamedTextColor.DARK_AQUA));
+        this.plugin.messageStatusUpdate(Component.text(message, NamedTextColor.YELLOW), togglingPlayer);
     }
 
     /**
@@ -318,7 +317,7 @@ public final class VanishManager {
 
     private void showVanishedActionBar(Player vanishingPlayer) {
         if (Bukkit.getPlayer(vanishingPlayer.getUniqueId()) != null && isVanished(vanishingPlayer)) {
-            vanishingPlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Settings.getVanishedActionBarMessage()));
+            vanishingPlayer.sendActionBar(LegacyComponentSerializer.legacyAmpersand().deserialize(Settings.getVanishedActionBarMessage()));
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -326,7 +325,7 @@ public final class VanishManager {
                 }
             }.runTaskLater(plugin, 20);
         } else {
-            vanishingPlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
+            vanishingPlayer.sendActionBar(Component.empty());
         }
     }
 
