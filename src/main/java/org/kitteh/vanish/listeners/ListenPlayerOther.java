@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.BlockInventoryHolder;
 import org.bukkit.inventory.Inventory;
 import org.kitteh.vanish.Settings;
@@ -168,6 +169,22 @@ public final class ListenPlayerOther implements Listener {
     public void onWorldChange(PlayerChangedWorldEvent event) {
         if (Settings.getWorldChangeCheck()) {
             this.plugin.getManager().playerRefresh(event.getPlayer());
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !VanishPerms.canSeeAll(event.getPlayer())) {
+            for (Player target : event.getTo().getWorld().getPlayers()) {
+                if (target != event.getPlayer()) {
+                    if (target.getLocation().equals(event.getTo())) {
+                        if (this.plugin.getManager().isVanished(target)) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+            }
         }
     }
 }
