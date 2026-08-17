@@ -205,12 +205,10 @@ public final class VanishManager {
         final String base = ChatColor.YELLOW + vanishingPlayerName + " has ";
         if (this.isVanished(togglingPlayer)) {
             Debuggle.log("LoudVanishToggle Vanishing " + togglingPlayer.getName());
-            this.plugin.hooksVanish(togglingPlayer);
             messageBit = "vanished. Poof.";
 
         } else {
             Debuggle.log("LoudVanishToggle Revealing " + togglingPlayer.getName());
-            this.plugin.hooksUnvanish(togglingPlayer);
             messageBit = "become visible.";
             this.announceManipulator.vanishToggled(togglingPlayer);
         }
@@ -256,11 +254,13 @@ public final class VanishManager {
             }
             this.vanishedPlayerNames.add(vanishingPlayerName);
             this.plugin.getLogger().info(vanishingPlayerName + " disappeared.");
+            this.plugin.hooksVanish(vanishingPlayer);
         } else {
             Debuggle.log("It's visible time! " + vanishingPlayer.getName());
             this.resetSleepingIgnored(vanishingPlayer);
             this.removeVanished(vanishingPlayerName);
             this.plugin.getLogger().info(vanishingPlayerName + " reappeared.");
+            this.plugin.hooksUnvanish(vanishingPlayer);
         }
         if (effects) {
             final Location oneUp = vanishingPlayer.getLocation().add(0, 1, 0);

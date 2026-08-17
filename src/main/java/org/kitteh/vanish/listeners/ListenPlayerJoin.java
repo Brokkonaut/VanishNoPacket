@@ -24,7 +24,6 @@ public final class ListenPlayerJoin implements Listener {
         this.plugin.getManager().resetSeeing(event.getPlayer());
         if (VanishPerms.joinVanished(event.getPlayer())) {
             this.plugin.getManager().toggleVanishQuiet(event.getPlayer(), false);
-            this.plugin.hooksVanish(event.getPlayer());
         }
         this.plugin.hooksJoin(event.getPlayer());
     }
