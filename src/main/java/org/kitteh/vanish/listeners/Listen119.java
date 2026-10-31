@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockReceiveGameEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.GenericGameEvent;
 import org.kitteh.vanish.VanishPlugin;
 
 public final class Listen119 implements Listener {
@@ -20,10 +21,17 @@ public final class Listen119 implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockReceiveGameEvent(BlockReceiveGameEvent event) {
         Entity trigger = event.getEntity();
-        if (trigger instanceof Player && event.getBlock().getType() == Material.SCULK_SENSOR) {
-            if (this.plugin.getManager().isVanished((Player) trigger)) {
-                event.setCancelled(true);
-            }
+        // sculk sensors, calibrated sculk sensors, shriekers
+        if (trigger instanceof Player player && this.plugin.getManager().isVanished(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onGenericGameEvent(GenericGameEvent event) {
+        // vibrations for every listener: sculk, wardens, allays
+        if (event.getEntity() instanceof Player player && this.plugin.getManager().isVanished(player)) {
+            event.setCancelled(true);
         }
     }
 

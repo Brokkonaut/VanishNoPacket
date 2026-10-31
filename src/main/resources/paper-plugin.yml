@@ -2,16 +2,47 @@ name: VanishNoPacket
 main: org.kitteh.vanish.VanishPlugin
 version: '${vnp-version}'
 website: http://kitteh.org
-softdepend: [Essentials,dynmap,JSONAPI,bPermissions,Spout,GeoIPTools,TagAPI,ProtocolLib,Vault]
 author: mbaxter
 description: Vanish for the distinguished admin
-dev-url: http://dev.bukkit.org/server-mods/vanish/
-api-version: 1.13
-commands:
-  vanish:
-    description: poof
-    usage: /vanish
-    aliases: [v,np,nf,ni,nc,nh]
+api-version: '26.3'
+dependencies:
+  server:
+    Essentials:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    dynmap:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    JSONAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    bPermissions:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Spout:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    GeoIPTools:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    TagAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    ProtocolLib:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true
 permissions:
   vanish.vanish:
     default: false
