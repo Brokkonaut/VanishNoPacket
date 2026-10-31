@@ -42,6 +42,10 @@ public final class VanishAnnounceManipulator {
         return player == null ? null : player.getUniqueId();
     }
 
+    /**
+     * @deprecated names are not unique over time, use {@link #addToDelayedAnnounce(UUID)}
+     */
+    @Deprecated
     public void addToDelayedAnnounce(String player) {
         final UUID uuid = this.uuid(player);
         if (uuid != null) {
@@ -61,7 +65,9 @@ public final class VanishAnnounceManipulator {
      * Removes a player's delayed announce
      *
      * @param player name of the player
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public void dropDelayedAnnounce(String player) {
         final UUID uuid = this.uuid(player);
         if (uuid != null) {
@@ -79,13 +85,25 @@ public final class VanishAnnounceManipulator {
      *
      * @param playerName name of the player to query
      * @return true if player is considered online, false if not (or if not on server)
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public boolean getFakeOnlineStatus(String playerName) {
-        final Player player = this.plugin.getServer().getPlayerExact(playerName);
-        if (player == null) {
+        final UUID uuid = this.uuid(playerName);
+        return uuid != null && this.getFakeOnlineStatus(uuid);
+    }
+
+    /**
+     * Gets the fake online status of a player
+     *
+     * @param playerId UUID of the player to query
+     * @return true if player is considered online, false if not (or if not on server)
+     */
+    public boolean getFakeOnlineStatus(UUID playerId) {
+        if (this.plugin.getServer().getPlayer(playerId) == null) {
             return false;
         }
-        return this.playerOnlineStatus.getOrDefault(player.getUniqueId(), true);
+        return this.playerOnlineStatus.getOrDefault(playerId, true);
     }
 
     /**
@@ -94,7 +112,9 @@ public final class VanishAnnounceManipulator {
      *
      * @param player name of the player who just quit
      * @return the former fake online status of the player
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public boolean playerHasQuit(String player) {
         final UUID uuid = this.uuid(player);
         return uuid == null || this.playerHasQuit(uuid);

@@ -68,6 +68,13 @@ public final class VanishManager {
         return this.bats;
     }
 
+    /**
+     * Gets the names of all vanished players
+     *
+     * @return names of vanished players
+     * @deprecated names are not unique over time, use {@link #getVanishedPlayerIds()}
+     */
+    @Deprecated
     public Set<String> getVanishedPlayers() {
         final ImmutableSet.Builder<String> names = ImmutableSet.builder();
         for (final UUID uuid : this.vanishedPlayers) {
@@ -77,6 +84,25 @@ public final class VanishManager {
             }
         }
         return names.build();
+    }
+
+    /**
+     * Gets the UUIDs of all vanished players
+     *
+     * @return UUIDs of vanished players
+     */
+    public Set<UUID> getVanishedPlayerIds() {
+        return ImmutableSet.copyOf(this.vanishedPlayers);
+    }
+
+    /**
+     * Gets if a player is vanished
+     *
+     * @param playerId UUID of the player to query
+     * @return true if vanished
+     */
+    public boolean isVanished(UUID playerId) {
+        return this.vanishedPlayers.contains(playerId);
     }
 
     /**
@@ -94,7 +120,9 @@ public final class VanishManager {
      *
      * @param playerName name of the player to query
      * @return if the named player is currently vanished
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public boolean isVanished(String playerName) {
         final Player player = this.plugin.getServer().getPlayerExact(playerName);
         if (player != null) {

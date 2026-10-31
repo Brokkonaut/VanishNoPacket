@@ -37,7 +37,9 @@ public final class VanishPlugin extends JavaPlugin {
      * Informs VNP that a user has closed their fake chest
      *
      * @param name user's name
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public void chestFakeClose(String name) {
         final Player player = this.getServer().getPlayerExact(name);
         if (player != null) {
@@ -50,7 +52,9 @@ public final class VanishPlugin extends JavaPlugin {
      *
      * @param name the user's name
      * @return true if currently using a fake chest
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public boolean chestFakeInUse(String name) {
         final Player player = this.getServer().getPlayerExact(name);
         return (player != null) && this.chestFakeInUse(player);
@@ -60,7 +64,9 @@ public final class VanishPlugin extends JavaPlugin {
      * Informs VNP that a user has opened their fake chest
      *
      * @param name user's name
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public void chestFakeOpen(String name) {
         final Player player = this.getServer().getPlayerExact(name);
         if (player != null) {
@@ -252,7 +258,7 @@ public final class VanishPlugin extends JavaPlugin {
         this.manager = new VanishManager(this);
 
         for (final Player player : this.getServer().getOnlinePlayers()) {
-            player.setMetadata("vanished", new LazyMetadataValue(this, CacheStrategy.NEVER_CACHE, new VanishCheck(this.manager, player.getName())));
+            player.setMetadata("vanished", new LazyMetadataValue(this, CacheStrategy.NEVER_CACHE, new VanishCheck(this.manager, player.getUniqueId())));
         }
 
         this.registerCommands(new VanishCommand(this));

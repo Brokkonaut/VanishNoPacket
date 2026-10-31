@@ -8,6 +8,7 @@ import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent.ListedPlayerInfo;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,11 +52,11 @@ public class ListenPaperEvents implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void ping(PaperServerListPingEvent event) {
-        final Set<String> invisibles = plugin.getManager().getVanishedPlayers();
+        final Set<UUID> invisibles = plugin.getManager().getVanishedPlayerIds();
         final Iterator<ListedPlayerInfo> players = event.getListedPlayers().iterator();
         while (players.hasNext()) {
             ListedPlayerInfo player = players.next();
-            if (invisibles.contains(player.name())) {
+            if (invisibles.contains(player.id())) {
                 players.remove();
             }
         }
