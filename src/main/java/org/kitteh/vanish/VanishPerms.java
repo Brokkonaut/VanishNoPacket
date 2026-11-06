@@ -3,12 +3,13 @@ package org.kitteh.vanish;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public final class VanishPerms {
-    private static Map<String, VanishUser> users = Collections.synchronizedMap(new HashMap<String, VanishUser>());
+    private static Map<UUID, VanishUser> users = Collections.synchronizedMap(new HashMap<UUID, VanishUser>());
 
     public static boolean blockIncomingDamage(Player player) {
         return VanishPerms.getUser(player).getPreventIncomingDamage();
@@ -239,15 +240,10 @@ public final class VanishPerms {
     }
 
     public static void userQuit(Player player) {
-        VanishPerms.users.remove(player.getName());
+        VanishPerms.users.remove(player.getUniqueId());
     }
 
     private static VanishUser getUser(Player player) {
-        VanishUser user = VanishPerms.users.get(player.getName());
-        if (user == null) {
-            user = new VanishUser(player);
-            VanishPerms.users.put(player.getName(), user);
-        }
-        return user;
+        return VanishPerms.users.computeIfAbsent(player.getUniqueId(), uuid -> new VanishUser(player));
     }
 }

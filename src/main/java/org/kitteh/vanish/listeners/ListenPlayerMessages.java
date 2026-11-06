@@ -1,15 +1,17 @@
 package org.kitteh.vanish.listeners;
 
-import org.bukkit.ChatColor;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.kitteh.vanish.Settings;
 import org.kitteh.vanish.VanishPerms;
 import org.kitteh.vanish.VanishPlugin;
+import org.kitteh.vanish.utils.Messages;
 
 public final class ListenPlayerMessages implements Listener {
     private final VanishPlugin plugin;
@@ -19,7 +21,7 @@ public final class ListenPlayerMessages implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
+    public void onPlayerChat(AsyncChatEvent event) {
         if (this.plugin.getManager().isVanished(event.getPlayer()) && VanishPerms.canNotChat(event.getPlayer())) {
             event.setCancelled(true);
         }
@@ -38,37 +40,25 @@ public final class ListenPlayerMessages implements Listener {
                 if (!selfTest && !otherTest) {
                     return;
                 }
-                final StringBuilder message = new StringBuilder();
+                final Component message;
                 String permission;
-                message.append(ChatColor.DARK_AQUA);
                 if ((split.length == 2) && selfTest) {
                     permission = split[1];
-                    message.append("You");
-                    if (!event.getPlayer().hasPermission(permission)) {
-                        message.append(" do not");
-                    }
-                    message.append(" have ");
+                    message = Component.text(event.getPlayer().hasPermission(permission) ? "You have " : "You do not have ");
                 } else if ((split.length == 3) && otherTest) {
                     final Player target = this.plugin.getServer().getPlayerExact(split[1]);
                     if (target == null) {
-                        message.append("Cannot find player: " + ChatColor.AQUA + split[1]);
-                        event.getPlayer().sendMessage(message.toString());
+                        event.getPlayer().sendMessage(Messages.prefixed(Component.text("Cannot find player: "), Component.text(split[1], NamedTextColor.AQUA)));
                         event.setCancelled(true);
                         return;
                     }
-                    message.append("Player " + ChatColor.AQUA + target.getName() + ChatColor.DARK_AQUA);
                     permission = split[2];
-                    if (!target.hasPermission(permission)) {
-                        message.append(" does not have ");
-                    } else {
-                        message.append(" has ");
-                    }
+                    message = Component.text().append(Component.text("Player "), Component.text(target.getName(), NamedTextColor.AQUA), Component.text(target.hasPermission(permission) ? " has " : " does not have ")).build();
                 } else {
                     return;
                 }
                 event.setCancelled(true);
-                message.append(ChatColor.AQUA + permission);
-                event.getPlayer().sendMessage(message.toString());
+                event.getPlayer().sendMessage(Messages.prefixed(message, Component.text(permission, NamedTextColor.AQUA)));
             }
 
         }

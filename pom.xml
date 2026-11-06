@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
 
     <name>VanishNoPacket</name>
-    <version>3.20.2-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
 
     <url>https://github.com/Brokkonaut/VanishNoPacket</url>
 
@@ -115,7 +115,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -142,7 +142,7 @@
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>plugin.yml</include>
+                    <include>paper-plugin.yml</include>
                     <include>config.yml</include>
                 </includes>
             </resource>

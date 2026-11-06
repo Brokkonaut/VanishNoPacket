@@ -1,6 +1,11 @@
 package org.kitteh.vanish;
 
-import org.bukkit.ChatColor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import net.kyori.adventure.text.Component;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.LazyMetadataValue;
 import org.bukkit.metadata.LazyMetadataValue.CacheStrategy;
@@ -15,13 +20,16 @@ import org.kitteh.vanish.listeners.ListenPlayerJoin;
 import org.kitteh.vanish.listeners.ListenPlayerMessages;
 import org.kitteh.vanish.listeners.ListenPlayerOther;
 import org.kitteh.vanish.listeners.ListenToYourHeart;
+import org.kitteh.vanish.utils.Messages;
 import org.kitteh.vanish.utils.MinecraftVersion;
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 public final class VanishPlugin extends JavaPlugin {
 
-    private final HashSet<String> haveInventoriesOpen = new HashSet<String>();
+    private final HashSet<UUID> haveInventoriesOpen = new HashSet<UUID>();
     private VanishManager manager;
     private final HookManager hookManager = new HookManager(this);
 
@@ -29,10 +37,13 @@ public final class VanishPlugin extends JavaPlugin {
      * Informs VNP that a user has closed their fake chest
      *
      * @param name user's name
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public void chestFakeClose(String name) {
-        synchronized (this.haveInventoriesOpen) {
-            this.haveInventoriesOpen.remove(name);
+        final Player player = this.getServer().getPlayerExact(name);
+        if (player != null) {
+            this.chestFakeClose(player);
         }
     }
 
@@ -41,21 +52,59 @@ public final class VanishPlugin extends JavaPlugin {
      *
      * @param name the user's name
      * @return true if currently using a fake chest
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public boolean chestFakeInUse(String name) {
-        synchronized (this.haveInventoriesOpen) {
-            return this.haveInventoriesOpen.contains(name);
-        }
+        final Player player = this.getServer().getPlayerExact(name);
+        return (player != null) && this.chestFakeInUse(player);
     }
 
     /**
      * Informs VNP that a user has opened their fake chest
      *
      * @param name user's name
+     * @deprecated names are not unique over time, use the UUID or Player variant
      */
+    @Deprecated
     public void chestFakeOpen(String name) {
+        final Player player = this.getServer().getPlayerExact(name);
+        if (player != null) {
+            this.chestFakeOpen(player);
+        }
+    }
+
+    /**
+     * Informs VNP that a user has closed their fake chest
+     *
+     * @param player the user
+     */
+    public void chestFakeClose(HumanEntity player) {
         synchronized (this.haveInventoriesOpen) {
-            this.haveInventoriesOpen.add(name);
+            this.haveInventoriesOpen.remove(player.getUniqueId());
+        }
+    }
+
+    /**
+     * Queries if a user is currently using a fake chest
+     *
+     * @param player the user
+     * @return true if currently using a fake chest
+     */
+    public boolean chestFakeInUse(HumanEntity player) {
+        synchronized (this.haveInventoriesOpen) {
+            return this.haveInventoriesOpen.contains(player.getUniqueId());
+        }
+    }
+
+    /**
+     * Informs VNP that a user has opened their fake chest
+     *
+     * @param player the user
+     */
+    public void chestFakeOpen(HumanEntity player) {
+        synchronized (this.haveInventoriesOpen) {
+            this.haveInventoriesOpen.add(player.getUniqueId());
         }
     }
 
@@ -65,7 +114,7 @@ public final class VanishPlugin extends JavaPlugin {
      * @return version of VanishNoPacket in use
      */
     public String getCurrentVersion() {
-        return this.getDescription().getVersion();
+        return this.getPluginMeta().getVersion();
     }
 
     /**
@@ -143,6 +192,25 @@ public final class VanishPlugin extends JavaPlugin {
      * @param avoid player to not send the message to
      */
     public void messageStatusUpdate(String message, Player avoid) {
+        this.messageStatusUpdate(Messages.legacy(message), avoid);
+    }
+
+    /**
+     * Sends a message to all players with vanish.statusupdates permission
+     *
+     * @param message the message to send
+     */
+    public void messageStatusUpdate(Component message) {
+        this.messageStatusUpdate(message, null);
+    }
+
+    /**
+     * Sends a message to all players with vanish.statusupdates but one
+     *
+     * @param message the message to send
+     * @param avoid player to not send the message to
+     */
+    public void messageStatusUpdate(Component message, Player avoid) {
         for (final Player player : this.getServer().getOnlinePlayers()) {
             if ((player != null) && !player.equals(avoid) && VanishPerms.canSeeStatusUpdates(player)) {
                 player.sendMessage(message);
@@ -156,7 +224,7 @@ public final class VanishPlugin extends JavaPlugin {
         for (final Player player : VanishPlugin.this.getServer().getOnlinePlayers()) {
             if (player != null) {
                 if (this.manager.isVanished(player)) {
-                    player.sendMessage(ChatColor.DARK_AQUA + "[Vanish] You have been forced visible by a reload.");
+                    player.sendMessage(Messages.prefixed("You have been forced visible by a reload."));
                 }
             }
         }
@@ -190,10 +258,10 @@ public final class VanishPlugin extends JavaPlugin {
         this.manager = new VanishManager(this);
 
         for (final Player player : this.getServer().getOnlinePlayers()) {
-            player.setMetadata("vanished", new LazyMetadataValue(this, CacheStrategy.NEVER_CACHE, new VanishCheck(this.manager, player.getName())));
+            player.setMetadata("vanished", new LazyMetadataValue(this, CacheStrategy.NEVER_CACHE, new VanishCheck(this.manager, player.getUniqueId())));
         }
 
-        this.getCommand("vanish").setExecutor(new VanishCommand(this));
+        this.registerCommands(new VanishCommand(this));
         this.getServer().getPluginManager().registerEvents(new ListenEntity(this), this);
         this.getServer().getPluginManager().registerEvents(new ListenPlayerMessages(this), this);
         this.getServer().getPluginManager().registerEvents(new ListenPlayerJoin(this), this);
@@ -210,6 +278,22 @@ public final class VanishPlugin extends JavaPlugin {
             this.getServer().getPluginManager().registerEvents(new Listen119(this), this);
         }
         this.getLogger().info(this.getCurrentVersion() + " loaded.");
+    }
+
+    private void registerCommands(VanishCommand executor) {
+        final Command command = new Command("vanish", "poof", "/vanish", List.of()) {
+            @Override
+            public boolean execute(CommandSender sender, String label, String[] args) {
+                return executor.onCommand(sender, this, label, args);
+            }
+        };
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            // Brigadier aliases do not tell which alias was used, but VanishCommand acts on the label: one registration per label
+            for (final String label : List.of("vanish", "v", "np", "nf", "ni", "nc", "nh")) {
+                final BasicCommand basicCommand = (source, args) -> executor.onCommand(source.getSender(), command, label, args);
+                event.registrar().register(label, "poof", basicCommand);
+            }
+        });
     }
 
     /**

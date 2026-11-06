@@ -3,6 +3,7 @@ package org.kitteh.vanish.listeners;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Warden;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -55,8 +56,12 @@ public final class ListenEntity implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityTarget(EntityTargetEvent event) {
-        if ((event.getTarget() instanceof Player) && this.plugin.getManager().isVanished((Player) event.getTarget()) && VanishPerms.canNotFollow((Player) event.getTarget())) {
+        // also covers EntityTargetLivingEntityEvent, any entity type (warden, ghast, phantom, slime, shulker, hoglin...)
+        if ((event.getTarget() instanceof Player player) && this.plugin.getManager().isVanished(player) && VanishPerms.canNotFollow(player)) {
             event.setCancelled(true);
+            if (event.getEntity() instanceof Warden warden) {
+                warden.clearAnger(player);
+            }
         }
     }
 
